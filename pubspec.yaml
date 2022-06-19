@@ -61,10 +61,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/chapternames.txt
-    - assets/chapternamese.txt
-    - assets/chapternamess.txt
-    - assets/data/
     - assets/data.xml
 
   # To add assets to your application, add an assets section, like this:

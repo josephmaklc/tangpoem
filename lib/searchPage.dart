@@ -6,7 +6,6 @@ import 'package:tangpoem/db/controller/PoemController.dart';
 import 'package:tangpoem/db/model/Poem.dart';
 
 import 'PoemView.dart';
-import 'db/model/Chapter.dart';
 import 'highlightText.dart';
 
 

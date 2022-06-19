@@ -8,7 +8,6 @@ import 'package:tangpoem/db/model/ListItemPoem.dart';
 import 'package:xml/xml.dart';
 
 import '../model/Poem.dart';
-import '../model/Chapter.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -237,30 +236,6 @@ public boolean setFavoritePoem(int id, String YN)
 }
 */
 
-  Future<List<String>> getAllChaptersForLanguage(var db, String language) async {
-    // Get a reference to the database.
-
-    List<Map<String, dynamic>> maps = await db.rawQuery("SELECT * FROM chapter WHERE language=?",[language]);
-
-    List<Chapter> chapters = List.generate(maps.length, (i) {
-      return Chapter(
-          id: maps[i]['id'],
-          title: maps[i]['title'],
-          text: maps[i]['text'],
-          language: maps[i]['language']
-      );
-    });
-
-    List<String> result = <String>[];
-    for(Chapter c in chapters) {
-      result.add(c.title);
-    }
-    return result;
-  }
-
-
-
-
   int chars=10;
   String dotdotdot(String sourceText, String textToSearch, int pos) {
     int i=1;
@@ -270,6 +245,10 @@ public boolean setFavoritePoem(int id, String YN)
     bool dotright = true;
     while (i <= chars) {
       int n=pos-i;
+      if (n<0) {
+        dotleft=false;
+        break;
+      }
 
       if (n>=0 && sourceText[n]!='\n') {
         leftChunk = sourceText[n] + leftChunk;
@@ -313,8 +292,13 @@ public boolean setFavoritePoem(int id, String YN)
 
   String getSnippet(String sourceText, String textToSearch) {
     int start = 0;
+    int j=0;
     String result="";
     do {
+      if (start >= sourceText.length) {
+        // not found
+        break;
+      }
       // System.out.println("start: "+start);
       int i = sourceText.indexOf(textToSearch, start);
       if (i < 0) {
@@ -322,13 +306,21 @@ public boolean setFavoritePoem(int id, String YN)
         // not found
         break;
       }
-      if (i > start) {
+      if (i >= start) {
         // normal text before highlight
         String ddd= dotdotdot(sourceText,textToSearch,i);
         //System.out.println(ddd);
         result+=ddd+"\n";
         start =i + textToSearch.length+chars;
       }
+
+      j++;
+      //print("...j="+j.toString());
+
+      if (j > 10) {
+        //print("breaking!");
+        break;
+      } // prevent infinite loop
     } while (true);
     return result;
   }
@@ -342,9 +334,9 @@ public boolean setFavoritePoem(int id, String YN)
     print("result length:"+result.length.toString());
 
     List<Poem> poems = <Poem>[];
-    for (int i=0; i <= result.length; i++) {
+    for (int i=0; i < result.length; i++) {
 
-      print("i="+i.toString()+" title="+result["title"]);
+      //print("i="+i.toString()+" title="+result[i]["title"]);
 
       String searchTextSnippet = getSnippet(result[i]['text'],textToSearch);
       print("searchTextSnippet: "+searchTextSnippet);

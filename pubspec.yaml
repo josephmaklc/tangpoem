@@ -46,8 +46,16 @@ dev_dependencies:
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  # rules and activating additional ones.0
   flutter_lints: ^1.0.0
+  flutter_launcher_icons: ^0.9.2
+
+# TODO: what's wrong with mac icon? https://www.digitalocean.com/community/tutorials/flutter-app-icons
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

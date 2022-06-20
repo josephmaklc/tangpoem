@@ -34,6 +34,7 @@ Future<ConfigInfo> showConfigurationDialog(
                         ))
                   ],
                 ),
+                /*
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -62,7 +63,7 @@ Future<ConfigInfo> showConfigurationDialog(
                               );
                             }).toList()))
                   ],
-                ),
+                ),*/
               ])),
           actions: <Widget>[
 

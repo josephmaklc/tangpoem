@@ -91,6 +91,60 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+  Future<String> selectListingBy() async {
+    String result="";
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('排列',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            children: <Widget>[
+              SimpleDialogOption(child: Column(
+                children: <Widget>[
+                  Text('詩體',style: TextStyle(fontSize: 18.0)),
+                ],
+              ),onPressed: () {
+                result= "詩體";
+                Navigator.pop(context);
+              },),
+              SimpleDialogOption(child: Column(
+                children: <Widget>[
+                  Text('作者',style: TextStyle(fontSize: 18.0))
+                ],
+              ),onPressed: () {
+                  result= "作者";
+                  Navigator.pop(context);
+              },),
+              SimpleDialogOption(child: Column(
+                children: <Widget>[
+                  Text('詩題',style: TextStyle(fontSize: 18.0))
+                ],
+              ),onPressed: () {
+                result= "詩題";
+                Navigator.pop(context);
+              },),
+              SimpleDialogOption(child: Column(
+                children: <Widget>[
+                  Text('我的心愛',style: TextStyle(fontSize: 18.0)),
+                ],
+              ),onPressed: () {
+                result = "我的心愛";
+                Navigator.pop(context);
+              },),
+
+            ],
+          );
+        }
+    );
+    return result;
+
+  }
 
   Scaffold listingScaffold(BuildContext context, List<ListItemPoem> listing) {
     return Scaffold(
@@ -119,7 +173,18 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.blue,
                 ),
               ),
-
+              ListTile(
+                leading: const Icon(Icons.list),
+                title: Text('排列',style:TextStyle(fontSize: fontSize)),
+                onTap: () async {
+                  String result = await selectListingBy();
+                  setState(() {
+                    listingBy = result;
+                    print("setting listingBy: "+result);
+                  });
+                  Navigator.pop(context);
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.settings),
                 title: Text('設定',style:TextStyle(fontSize: fontSize)),
@@ -134,6 +199,7 @@ class _MyAppState extends State<MyApp> {
 
                 },
               ),
+
               ListTile(
                 leading: const Icon(Icons.info_outline),
                 title: Text('關於',style:TextStyle(fontSize: fontSize)),

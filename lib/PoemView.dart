@@ -43,6 +43,10 @@ class PoemView extends StatelessWidget {
     TextStyle normalTextStyle = TextStyle(fontSize: fontSize);
     TextStyle highlightTextStyle = TextStyle(fontSize: fontSize, backgroundColor: Colors.yellow);
 
+
+    String text = "\t"+poem.text.replaceAll("            ", "\t");
+    print(text);
+
     return Scaffold(
         appBar:
         AppBar(title: Text(poem.title+' - '+poem.author),
@@ -59,7 +63,7 @@ class PoemView extends StatelessWidget {
 
             child: SingleChildScrollView(
                 child: //Text(chapter.text,style: normalTextStyle)
-                HighlightText(poem.text,
+                HighlightText(text,
                     highlightText,true,normalTextStyle,highlightTextStyle,true)
             )
         )

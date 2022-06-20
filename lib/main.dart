@@ -1,27 +1,29 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:tangpoem/FilteredView.dart';
 import 'package:tangpoem/searchPage.dart';
-import 'package:xml/xml.dart';
+
 import 'PoemView.dart';
 import 'aboutDialog.dart';
 import 'configDialog.dart';
-
 import 'db/controller/PoemController.dart';
-
-import 'dart:async';
-import 'package:flutter/services.dart' show rootBundle;
-
 import 'db/model/ListItemPoem.dart';
-import 'db/model/Poem.dart';
-import 'package:intl/intl.dart';
 
 const String appTitle = "唐詩三百首";
 const String author = "Joseph Mak";
 const String version = "v 2.0";
 const String appDate = "June 9, 2022";
+
+const String LISTING_BY_TITLE = "詩題";
+const String LISTING_BY_AUTHOR = "作者";
+const String LISTING_BY_CATEGORY = "詩體";
+const String LISTING_BY_FAVORITES = "我的心愛";
+
+// default values
 double fontSize=18;
+String listingBy=LISTING_BY_TITLE;
 
 void main() {
   runApp(
@@ -33,7 +35,6 @@ void main() {
   );
 }
 
-String listingBy="詩體";
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -71,11 +72,11 @@ class _MyAppState extends State<MyApp> {
             PoemLists poemlists = snapshot.data as PoemLists;
             List<ListItemPoem> listing=<ListItemPoem>[];
 
-            listing = poemlists.categoryList; //"詩體", "作者", "詩題","我的心愛"
+            listing = poemlists.categoryList;
 
-            if (listingBy=="詩體") listing = poemlists.categoryList;
-            if (listingBy=="作者") listing = poemlists.authorList;
-            if (listingBy=="詩題") listing = poemlists.titleList;
+            if (listingBy==LISTING_BY_CATEGORY) listing = poemlists.categoryList;
+            if (listingBy==LISTING_BY_AUTHOR) listing = poemlists.authorList;
+            if (listingBy==LISTING_BY_TITLE) listing = poemlists.titleList;
 
 
             //for (String s in listing) {
@@ -107,34 +108,34 @@ class _MyAppState extends State<MyApp> {
             children: <Widget>[
               SimpleDialogOption(child: Column(
                 children: <Widget>[
-                  Text('詩體',style: TextStyle(fontSize: 18.0)),
+                  Text(LISTING_BY_CATEGORY,style: TextStyle(fontSize: 18.0)),
                 ],
               ),onPressed: () {
-                result= "詩體";
+                result= LISTING_BY_CATEGORY;
                 Navigator.pop(context);
               },),
               SimpleDialogOption(child: Column(
                 children: <Widget>[
-                  Text('作者',style: TextStyle(fontSize: 18.0))
+                  Text(LISTING_BY_AUTHOR,style: TextStyle(fontSize: 18.0))
                 ],
               ),onPressed: () {
-                  result= "作者";
+                  result= LISTING_BY_AUTHOR;
                   Navigator.pop(context);
               },),
               SimpleDialogOption(child: Column(
                 children: <Widget>[
-                  Text('詩題',style: TextStyle(fontSize: 18.0))
+                  Text(LISTING_BY_TITLE,style: TextStyle(fontSize: 18.0))
                 ],
               ),onPressed: () {
-                result= "詩題";
+                result= LISTING_BY_TITLE;
                 Navigator.pop(context);
               },),
               SimpleDialogOption(child: Column(
                 children: <Widget>[
-                  Text('我的心愛',style: TextStyle(fontSize: 18.0)),
+                  Text(LISTING_BY_FAVORITES,style: TextStyle(fontSize: 18.0)),
                 ],
               ),onPressed: () {
-                result = "我的心愛";
+                result = LISTING_BY_FAVORITES;
                 Navigator.pop(context);
               },),
 
@@ -180,7 +181,7 @@ class _MyAppState extends State<MyApp> {
                   String result = await selectListingBy();
                   setState(() {
                     listingBy = result;
-                    print("setting listingBy: "+result);
+                    //print("setting listingBy: "+result);
                   });
                   Navigator.pop(context);
                 },
@@ -225,11 +226,10 @@ class _MyAppState extends State<MyApp> {
               title: Text(listing[index].displayText,style:TextStyle(fontSize: fontSize)),
               onTap: () {
 
-                //"詩體", "作者", "詩題","我的心愛"
-                if (listingBy=="詩體" || listingBy=="作者") {
+                if (listingBy==LISTING_BY_CATEGORY || listingBy==LISTING_BY_AUTHOR) {
                   String filteredBy="";
-                  if (listingBy=="詩體") filteredBy="category";
-                  if (listingBy=="作者") filteredBy="author";
+                  if (listingBy==LISTING_BY_CATEGORY) filteredBy="category";
+                  if (listingBy==LISTING_BY_AUTHOR) filteredBy="author";
 
                   Navigator.push(
                       context,

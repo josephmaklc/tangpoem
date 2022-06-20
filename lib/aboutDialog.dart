@@ -5,7 +5,7 @@ void myShowAboutDialog(BuildContext context, String appTitle, String author, Str
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('About ' + appTitle, textAlign: TextAlign.center),
+        title: Text('關於 ' + appTitle, textAlign: TextAlign.center),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[

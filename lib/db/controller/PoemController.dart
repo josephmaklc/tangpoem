@@ -99,7 +99,7 @@ Future<void> populatePoemsTable(var db) async {
 
     print ("isNew: "+isNew.toString());
     if (isNew) {
-      populatePoemsTable(database);
+      await populatePoemsTable(database);
     }
     return database;
 
@@ -161,6 +161,7 @@ Future<List<ListItemPoem>>  getTitles(var db) async {
   for (var r in resultSet) {
     String title = r['title']+' - '+r['author'];
     ListItemPoem li = ListItemPoem(id: r['id'], displayText: title);
+    li.favorite=r['favorite']=='Y';
     result.add(li);
   }
   return result;
@@ -184,23 +185,36 @@ Future<List<ListItemPoem>> getAuthors(var db) async {
 
 Future<List<ListItemPoem>> getPoemData(var db, String field, String value) async
 {
-  String q = "SELECT id,author, title FROM poems WHERE "+field+" = '"+value+"' ORDER BY authorOrder";
+  String q = "SELECT id,author, title, favorite FROM poems WHERE "+field+" = '"+value+"' ORDER BY authorOrder";
   print("q="+q);
   List<ListItemPoem> result = <ListItemPoem>[];
   var resultSet = await db.rawQuery(q);
   for (var r in resultSet) {
-    //print("I see : "+r['author']);
+//    print("I see : "+r['author']+" "+r['title']+" favorite: "+r['favorite']);
     String displayText="";
     if (field=="author") displayText=r['title'];
-    if (field=="category") displayText=r['title']+" - "+r['author'];
+    if (field=="category" || (field=="favorite")) displayText=r['title']+" - "+r['author'];
 
     ListItemPoem li = ListItemPoem(id: r['id'], displayText: displayText);
+    li.favorite=r['favorite']=='Y';
     result.add(li);
   }
   return result;
 
 }
 
+Future<List<ListItemPoem>> getFavoritePoems(var db) async
+{
+  return getPoemData(db, "favorite", "Y");
+}
+
+Future<void> setFavoritePoem(var db, String id, String YN) async
+{
+ String q = "UPDATE poems set favorite='"+YN+"' where id='"+id+"'";
+  print("q="+q);
+
+  await db.rawQuery(q);
+}
 
 Future<Poem> getPoemById(var db, String id) async
 {
@@ -219,22 +233,6 @@ Future<Poem> getPoemById(var db, String id) async
         titleOrder: maps[i][COLUMN_TITLE_ORDER]);
 }
 
-/*
-public Cursor getFavoritePoems() throws SQLException
-{
-String q = "SELECT title, author, id FROM poems WHERE favorite='Y' ORDER BY author COLLATE LOCALIZED ASC,title COLLATE LOCALIZED ASC";
-System.out.println("q="+q);
-return db.rawQuery(q,null);
-}
-
-public boolean setFavoritePoem(int id, String YN)
-{
-  ContentValues args = new ContentValues();
-  args.put(DatabaseOpenHelper.COLUMN_FAVORITE, YN);
-  return db.update(DatabaseOpenHelper.DATABASE_TABLE, args,
-      DatabaseOpenHelper.COLUMN_ROWID + "='" + id+"'", null) > 0;
-}
-*/
 
   int chars=10;
   String dotdotdot(String sourceText, String textToSearch, int pos) {

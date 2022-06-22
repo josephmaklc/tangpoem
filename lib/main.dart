@@ -23,7 +23,7 @@ const String LISTING_BY_FAVORITES = "我的心愛";
 
 // default values
 double fontSize=18;
-String listingBy=LISTING_BY_TITLE;
+String listingBy=LISTING_BY_CATEGORY;
 
 void main() {
   runApp(
@@ -47,6 +47,7 @@ class PoemLists {
   List<ListItemPoem> categoryList = <ListItemPoem>[];
   List<ListItemPoem> authorList = <ListItemPoem>[];
   List<ListItemPoem> titleList = <ListItemPoem>[];
+  List<ListItemPoem> favoritesList = <ListItemPoem>[];
 }
 
 class _MyAppState extends State<MyApp> {
@@ -77,13 +78,16 @@ class _MyAppState extends State<MyApp> {
             if (listingBy==LISTING_BY_CATEGORY) listing = poemlists.categoryList;
             if (listingBy==LISTING_BY_AUTHOR) listing = poemlists.authorList;
             if (listingBy==LISTING_BY_TITLE) listing = poemlists.titleList;
+            if (listingBy==LISTING_BY_FAVORITES) {
+              listing = poemlists.favoritesList;
+              if (listing.isEmpty) {
+             //   _showToast(context, "Cannot find My Favorites");
+              }
+            }
 
 
-            //for (String s in listing) {
-            //  print("s: "+s);
-            //}
-
-            return listingScaffold(context,listing);
+              return listingScaffold(context,listing);
+            
           } else {
             return const CircularProgressIndicator();
           }
@@ -147,7 +151,19 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+/*  void _showToast(BuildContext context, String message) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message)
+
+      ),
+    );
+  }
+*/
+
   Scaffold listingScaffold(BuildContext context, List<ListItemPoem> listing) {
+
     return Scaffold(
         appBar: AppBar(
 
@@ -243,8 +259,24 @@ class _MyAppState extends State<MyApp> {
                       MaterialPageRoute(builder: (context) => PoemView(highlightText:"",id:listing[index].id,fontSize:fontSize)));
 
                 }
+              },
+              trailing: listingBy!=LISTING_BY_TITLE?null: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        listing[index].favorite = !listing[index].favorite;
+                      });
 
-              }, // Handle your onTap here.
+                      String YN = listing[index].favorite?"Y":"N";
+
+                      PoemController c = PoemController();
+                      final db = await c.initPoemsTable();
+                      c.setFavoritePoem(db, listing[index].id, YN);
+
+                    },
+                    icon: Icon(
+                        Icons.favorite_rounded,
+                        color: listing[index].favorite? Colors.red: Colors.black12)
+                )
             );
             return item;
           },
@@ -279,6 +311,7 @@ class _MyAppState extends State<MyApp> {
     poemLists.categoryList = await c.getCategories(db);
     poemLists.titleList = await c.getTitles(db);
     poemLists.authorList = await c.getAuthors(db);
+    poemLists.favoritesList = await c.getFavoritePoems(db);
 
     print("about to be done with getThingsOnStartup");
     return poemLists;

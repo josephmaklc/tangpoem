@@ -326,7 +326,9 @@ Future<Poem> getPoemById(var db, String id) async
   Future<List<Poem>> searchText(var db, String textToSearch) async {
     print("Trying to get search for text... "+textToSearch);
 
-    String sql = "SELECT id, title,text FROM poems WHERE text like '%"+textToSearch+"%'";
+    String sql = "SELECT id, title,text,author FROM poems WHERE author like '%"+textToSearch+"%'"
+    + " or title  like '%"+textToSearch+"%'"
+    + " or text like '%"+textToSearch+"%'";
     var result =  await db.rawQuery(sql);
     print("sql="+sql);
     print("result length:"+result.length.toString());
@@ -336,11 +338,28 @@ Future<Poem> getPoemById(var db, String id) async
 
       //print("i="+i.toString()+" title="+result[i]["title"]);
 
+      String searchTextSnippet="";
+      int occurence=0;
+      if (result[i]['author'].toString().contains(textToSearch)) {
+        searchTextSnippet = getSnippet(result[i]['author'],textToSearch);
+        occurence = countOccurrences(result[i]['author'], textToSearch, 0);
+      }
+      if (result[i]['title'].toString().contains(textToSearch)) {
+        searchTextSnippet = getSnippet(result[i]['title'],textToSearch);
+        occurence = countOccurrences(result[i]['title'], textToSearch, 0);
+      }
+      if (result[i]['text'].toString().contains(textToSearch)) {
+        searchTextSnippet = getSnippet(result[i]['text'],textToSearch);
+        occurence = countOccurrences(result[i]['text'], textToSearch, 0);
+      }
+
+      /*
       String searchTextSnippet = getSnippet(result[i]['text'],textToSearch);
       print("searchTextSnippet: "+searchTextSnippet);
 
       int occurence = countOccurrences(result[i]['text'], textToSearch, 0);
       print("occurance:"+occurence.toString());
+      */
 
       Poem p = Poem(
           id: result[i]['id'],

@@ -131,7 +131,6 @@ class SearchPageState extends State<SearchPage> {
 
                         var searchResults = await doSearch(value);
 
-                        print("I am here");
                         setState(() {
                           poems = searchResults;
                           searchText = value;

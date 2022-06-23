@@ -72,12 +72,18 @@ class FilteredViewState extends State<FilteredView> {
 
             ListTile item = ListTile(
                 title: Text(listing[index].displayText,style:TextStyle(fontSize: fontSize)),
-                onTap: () {
-                  //print("somebody clicked "+listing[index].displayText);
+                onTap: () async {
 
-                  Navigator.push(
+                  await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => PoemView(highlightText:"",id:listing[index].id,fontSize:fontSize)));
+
+                  List<ListItemPoem> listingUpdated = await loadPoemsFiltered();
+
+                  setState(() {
+                    listing = listingUpdated;
+                  });
+
                 }, // Handle your onTap here.
 
                 trailing: IconButton(

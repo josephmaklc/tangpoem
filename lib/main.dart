@@ -162,6 +162,15 @@ class _MyAppState extends State<MyApp> {
   }
 */
 
+  Future<List<ListItemPoem>> loadUpdatedListing(String listingBy) async {
+    print("loadUpdatedListing");
+    PoemController c = PoemController();
+    final db = await c.initPoemsTable();
+    if (listingBy==LISTING_BY_FAVORITES) return c.getFavoritePoems(db);
+    if (listingBy==LISTING_BY_TITLE) return c.getTitles(db);
+    return c.getCategories(db);
+  }
+
   Scaffold listingScaffold(BuildContext context, List<ListItemPoem> listing) {
 
     return Scaffold(
@@ -240,7 +249,7 @@ class _MyAppState extends State<MyApp> {
 
             ListTile item = ListTile(
               title: Text(listing[index].displayText,style:TextStyle(fontSize: fontSize)),
-              onTap: () {
+              onTap: () async {
 
                 if (listingBy==LISTING_BY_CATEGORY || listingBy==LISTING_BY_AUTHOR) {
                   String filteredBy="";
@@ -254,9 +263,16 @@ class _MyAppState extends State<MyApp> {
                 }
                 else {
 
-                  Navigator.push(
+                  // Favorites may be updated so need to reload
+                  await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => PoemView(highlightText:"",id:listing[index].id,fontSize:fontSize)));
+
+                  List<ListItemPoem> listingUpdated = await loadUpdatedListing(listingBy);
+
+                  setState(() {
+                    listing = listingUpdated;
+                  });
 
                 }
               },
